@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/hashicorp/go-retryablehttp"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -33,7 +34,11 @@ func home(w http.ResponseWriter, r *http.Request) {
 	if resultCoupon.Status == "invalid" {
 		result.Status = "invalid coupon"
 	}
+	if resultCoupon.Status == "declined" {
+		result.Status = "Servidor fora do ar!"
+	}
 
+	// Transforma em JSON
 	jsonData, err := json.Marshal(result)
 	if err != nil {
 		log.Fatal("Error processing json")
@@ -48,7 +53,10 @@ func makeHttpCall(urlMicroservice string, coupon string) Result {
 	values := url.Values{}
 	values.Add("coupon", coupon)
 
-	res, err := http.PostForm(urlMicroservice, values)
+	retryClient := retryablehttp.NewClient()
+	retryClient.RetryMax = 5
+
+	res, err := retryClient.PostForm(urlMicroservice, values)
 	if err != nil {
 		result := Result{Status: "Servidor fora do ar!"}
 		return result

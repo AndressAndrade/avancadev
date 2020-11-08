@@ -22,6 +22,7 @@ func main() {
 
 func home(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("templates/home.html"))
+	// Resultado vazio, pois está na home
 	t.Execute(w, Result{})
 }
 
