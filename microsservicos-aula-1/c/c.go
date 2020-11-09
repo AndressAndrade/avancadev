@@ -49,7 +49,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	// valid := coupons.Check(coupon)
 
 	// result := Result{Status: valid}
-	resultCoupon := makeHttpCall("http://localhost:3333/validateCoupon/" + coupon, coupon)
+	resultCoupon := makeHttpCall("http://microservico4:3333/validateCoupon/" + coupon, coupon)
 	
 	result := Result{Status: "declined"}
 	
@@ -78,7 +78,7 @@ func makeHttpCall(urlMicroservice string, coupon string) Result {
 	retryClient := retryablehttp.NewClient()
 	retryClient.RetryMax = 5
 
-	res, err := retryClient.PostForm(urlMicroservice, values)
+	res, err := http.PostForm(urlMicroservice, values)
 	if err != nil {
 		result := Result{Status: "Servidor fora do ar!"}
 		return result
